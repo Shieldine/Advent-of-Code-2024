@@ -2,7 +2,7 @@ def read_input():
     left = []
     right = []
 
-    with open("inputs/day_1.txt", "r") as f:
+    with open("../inputs/day_1.txt", "r") as f:
         for line in f:
             one, two = line.split("   ")
             left.append(int(one.strip()))
