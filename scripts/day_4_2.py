@@ -1,16 +1,16 @@
 lines = []
 
 with open("../inputs/day_4.txt") as f:
-    for line in f:
-        lines.append(line.strip())
+    for row in f:
+        lines.append(row.strip())
 
 
 def is_star(text, line, start_char):
     rows, cols = len(text), len(text[0])
 
-    if line-1 < 0 or line+1 >= rows:
+    if line - 1 < 0 or line + 1 >= rows:
         return False
-    if start_char-1 < 0 or start_char+1 >= cols:
+    if start_char - 1 < 0 or start_char + 1 >= cols:
         return False
 
     diagonal = text[line - 1][start_char - 1] + text[line][start_char] + text[line + 1][start_char + 1]

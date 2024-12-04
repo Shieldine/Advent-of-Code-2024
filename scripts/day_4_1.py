@@ -3,11 +3,11 @@ word = "XMAS"
 lines = []
 
 with open("../inputs/day_4.txt") as f:
-    for line in f:
-        lines.append(line.strip())
+    for row in f:
+        lines.append(row.strip())
 
 
-def is_diagonal(text, line, start_char):
+def check_diagonal(text, line, start_char):
     num = 0
     rows, cols = len(text), len(text[0])
 
@@ -34,17 +34,19 @@ def is_diagonal(text, line, start_char):
     return num
 
 
-def is_horizontal(text, line, start_char):
+def check_horizontal(text, line, start_char):
     num = 0
 
+    # right
     if text[line][start_char:start_char + 4] == word:
         num += 1
-    if text[line][start_char-3:start_char+1] == word[::-1]:
+    # left
+    if text[line][start_char - 3:start_char + 1] == word[::-1]:
         num += 1
     return num
 
 
-def is_vertical(text, line, start_char):
+def check_vertical(text, line, start_char):
     num = 0
     rows = len(text)
     # up
@@ -64,7 +66,7 @@ def count_occurrences(text):
     for i, line in enumerate(text):
         for c_i, character in enumerate(line):
             if character == word[0]:
-                num += is_horizontal(text, i, c_i) + is_vertical(text, i, c_i) + is_diagonal(text, i, c_i)
+                num += check_horizontal(text, i, c_i) + check_vertical(text, i, c_i) + check_diagonal(text, i, c_i)
 
     return num
 
