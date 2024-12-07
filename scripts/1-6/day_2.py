@@ -1,7 +1,7 @@
 def read_input():
     reports = []
 
-    with open('../inputs/day_2.txt') as f:
+    with open('../../inputs/1-6/day_2.txt') as f:
         for line in f:
             numbers = line.split(" ")
 

@@ -1,6 +1,6 @@
 lines = []
 
-with open("../inputs/day_4.txt") as f:
+with open("../../inputs/1-6/day_4.txt") as f:
     for row in f:
         lines.append(row.strip())
 

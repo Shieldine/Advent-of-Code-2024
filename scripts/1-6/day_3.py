@@ -1,6 +1,6 @@
 import re
 
-with open("../inputs/day_3.txt") as f:
+with open("../../inputs/1-6/day_3.txt") as f:
     lines = f.readlines()
 
 lines = "".join(lines)

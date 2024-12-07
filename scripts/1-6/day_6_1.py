@@ -1,6 +1,6 @@
 lab = []
 
-with open("../inputs/day_6.txt") as f:
+with open("../../inputs/1-6/day_6.txt") as f:
     for line in f:
         lab.append(line.strip())
 

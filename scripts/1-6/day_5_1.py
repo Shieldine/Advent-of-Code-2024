@@ -2,7 +2,7 @@ rules = {}
 
 updates = []
 
-with open("../inputs/day_5.txt") as f:
+with open("../../inputs/1-6/day_5.txt") as f:
     for line in f:
         if "|" in line:
             first, second = line.strip().split("|")
