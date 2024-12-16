@@ -5,7 +5,7 @@ from operator import mul
 
 def read_input():
     lines = []
-    with open('../inputs/day_7.txt') as f:
+    with open('../../inputs/7-12/day_7.txt') as f:
         for line in f:
             split = line.strip().split(":")
             result = split[0]
