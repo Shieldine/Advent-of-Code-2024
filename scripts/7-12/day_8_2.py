@@ -4,7 +4,7 @@ with open("../../inputs/7-12/day_8.txt") as f:
     for line in f:
         antenna_map.append(line.strip())
 
-frequencies = result = {x for l in antenna_map for x in l}
+frequencies = {x for l in antenna_map for x in l}
 frequencies.remove(".")
 
 rows = len(antenna_map)
@@ -28,14 +28,15 @@ for freq in frequencies:
     for combination in combinations:
         # get direction
         direction = [combination[0][0] - combination[1][0], combination[0][1] - combination[1][1]]
+
+        antinodes.add(combination[0])
+        antinodes.add(combination[1])
+
         i = 1
 
         # keep going into one direction
         while True:
             node_1 = combination[0][0] + direction[0] * i, combination[0][1] + direction[1] * i
-            if i >= 2:
-                antinodes.add(combination[0])
-                antinodes.add(combination[1])
             if 0 <= node_1[0] < rows and 0 <= node_1[1] < cols:
                 antinodes.add(node_1)
                 i += 1
@@ -47,9 +48,6 @@ for freq in frequencies:
         # keep going into the other direction
         while True:
             node_2 = combination[1][0] - direction[0] * i, combination[1][1] - direction[1] * i
-            if i >= 2:
-                antinodes.add(combination[0])
-                antinodes.add(combination[1])
             if 0 <= node_2[0] < rows and 0 <= node_2[1] < cols:
                 antinodes.add(node_2)
                 i += 1
