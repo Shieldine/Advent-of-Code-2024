@@ -1,10 +1,12 @@
+from collections import defaultdict
+
 stones = []
 with open("../../inputs/7-12/day_11.txt") as file:
     stones = file.read().strip().split(" ")
 
 stones = [int(stone) for stone in stones]
 
-BLINKS = 25
+BLINKS = 75
 
 memo_cache = {}
 
@@ -26,12 +28,19 @@ def transform(stone):
     return result
 
 
+stone_counts = defaultdict(int)
+
+for stone in stones:
+    stone_counts[stone] += 1
+
 for _ in range(BLINKS):
-    new_list = []
+    new_counts = defaultdict(int)
 
-    for stone in stones:
-        new_list.extend(transform(stone))
+    for stone, count in stone_counts.items():
+        for new_stone in transform(stone):
+            new_counts[new_stone] += count
 
-    stones = new_list
+    stone_counts = new_counts
 
-print(len(stones))
+total_stones = sum(stone_counts.values())
+print(total_stones)
