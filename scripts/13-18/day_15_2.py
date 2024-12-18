@@ -44,14 +44,15 @@ def find_boxes(box, direction):
     positions = []
 
     for part in box:
-        if tile_map[part[0]][part[1] + direction] == "#":
+        if tile_map[part[0] + direction][part[1]] == "#":
+            print("cant move")
             return -1
-        if tile_map[part[0]][part[1] + direction] == "[" or tile_map[part[0]][part[1] + direction] == "]":
-            first = (box[0], box[1] + direction)
-            if tile_map[part[0]][part[1] + direction] == "[":
-                second = (box[0] + 1, box[1] + direction)
+        if tile_map[part[0] + direction][part[1]] == "[" or tile_map[part[0] + direction][part[1]] == "]":
+            first = (box[0] + direction, box[1])
+            if tile_map[part[0] + direction][part[1]] == "[":
+                second = (box[0] + direction, box[1] + 1)
             else:
-                second = (box[0] - 1, box[1] + direction)
+                second = (box[0] + direction, box[1] + -1)
             positions.append(first)
             positions.append(second)
 
@@ -165,14 +166,15 @@ for move in moves:
                     direction = (1, 0)
                     positions_to_move = sorted(positions_to_move, key=lambda tup: tup[0])[::-1]
 
-            print(positions_to_move)
-
             for position in positions_to_move:
                 tile_map[position[0] + direction[0]][position[1] + direction[1]] = tile_map[position[0]][position[1]]
                 tile_map[position[0] + direction[0]][position[1]] = "."
 
     elif tile_map[x][y] != "#":
         pos = [x, y]
+
+    print(move)
+    print_map(deepcopy(tile_map))
 
 score = 0
 
