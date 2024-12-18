@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 def print_map(tile_map, pos):
     tile_map[pos[0]][pos[1]] = "@"  # Mark the current position
     for row in tile_map:
@@ -45,8 +43,12 @@ def find_boxes(box, direction, tile_map):
         if next_tile == "#":
             return -1
         elif next_tile in ["[", "]"]:
-            first = (part[0] + direction, part[1])
-            second = (part[0] + direction, part[1] + 1) if next_tile == "[" else (part[0] + direction, part[1] - 1)
+            if next_tile == "[":
+                first = (part[0] + direction, part[1])
+                second = (part[0] + direction, part[1] + 1)
+            else:
+                first = (part[0] + direction, part[1] - 1)
+                second = (part[0] + direction, part[1])
             positions.append(first)
             positions.append(second)
             nested_boxes = find_boxes([first, second], direction, tile_map)
@@ -87,15 +89,19 @@ def process_moves(tile_map, moves, pos):
                     if tile_map[end[0]][end[1] - 1] == "#":
                         valid = False
                 case "^":
-                    if tile_map[end[0] - 1][end[1]] in ["[", "]"]:
-                        first = (end[0] - 1, end[1])
-                        second = (end[0] - 1, end[1] + 1) if tile_map[end[0] - 1][end[1]] == "[" else (end[0] - 1, end[1] - 1)
+                    if tile_map[end[0]][end[1]] in ["[", "]"]:
+                        if tile_map[end[0]][end[1]] == "]":
+                            first = (end[0], end[1] - 1)
+                            second = (end[0], end[1])
+                        else:
+                            first = (end[0], end[1])
+                            second = (end[0], end[1] + 1)
                         nested_boxes = find_boxes([first, second], -1, tile_map)
                         if nested_boxes == -1:
                             valid = False
                         else:
                             positions_to_move.extend([first, second, *nested_boxes])
-                    if tile_map[end[0] - 1][end[1]] == "#":
+                    if tile_map[end[0]][end[1]] == "#":
                         valid = False
                 case ">":
                     while tile_map[end[0]][end[1] + 1] in ["[", "]"]:
@@ -106,15 +112,19 @@ def process_moves(tile_map, moves, pos):
                     if tile_map[end[0]][end[1] + 1] == "#":
                         valid = False
                 case "v":
-                    if tile_map[end[0] + 1][end[1]] in ["[", "]"]:
-                        first = (end[0] + 1, end[1])
-                        second = (end[0] + 1, end[1] + 1) if tile_map[end[0] + 1][end[1]] == "[" else (end[0] + 1, end[1] - 1)
+                    if tile_map[end[0]][end[1]] in ["[", "]"]:
+                        if tile_map[end[0]][end[1]] == "]":
+                            first = (end[0], end[1] - 1)
+                            second = (end[0], end[1])
+                        else:
+                            first = (end[0], end[1])
+                            second = (end[0], end[1] + 1)
                         nested_boxes = find_boxes([first, second], 1, tile_map)
                         if nested_boxes == -1:
                             valid = False
                         else:
                             positions_to_move.extend([first, second, *nested_boxes])
-                    if tile_map[end[0] + 1][end[1]] == "#":
+                    if tile_map[end[0]][end[1]] == "#":
                         valid = False
 
             if valid:
@@ -124,6 +134,7 @@ def process_moves(tile_map, moves, pos):
                     ">": (0, 1),
                     "v": (1, 0),
                 }[move]
+                positions_to_move = list(set(positions_to_move))
                 positions_to_move.sort(key=lambda tup: (tup[0], tup[1]), reverse=(move in [">", "v"]))
 
                 for position in positions_to_move:
@@ -135,9 +146,6 @@ def process_moves(tile_map, moves, pos):
         elif tile_map[x][y] != "#":
             pos = [x, y]
 
-        print(move)
-        print_map(deepcopy(tile_map), pos)
-
     return tile_map
 
 
@@ -147,7 +155,6 @@ def calculate_score(tile_map):
 
 file_path = "../../inputs/13-18/day_15.txt"
 tile_map, moves, pos = load_map_and_moves(file_path)
-print_map(deepcopy(tile_map), pos)
 tile_map = process_moves(tile_map, moves, pos)
 score = calculate_score(tile_map)
 print(score)
