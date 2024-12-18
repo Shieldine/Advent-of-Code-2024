@@ -66,9 +66,9 @@ def count_edges(region_points):
 
     first = region_points[0]
 
-    if (first[0], first[1]+1) in region_points:
+    if (first[0], first[1] + 1) in region_points:
         edges -= 1
-    if (first[0]+1, first[1]) in region_points:
+    if (first[0] + 1, first[1]) in region_points:
         edges -= 1
 
     for idx, point in enumerate(region_points):
@@ -78,9 +78,7 @@ def count_edges(region_points):
         edges += 4
 
         left = top = right = bottom = False
-        diag_top_left = diag_top_right = diag_bottom_left = diag_bottom_right = False
-
-        # Define directions including diagonals
+        diag_top_left = diag_top_right = diag_bottom_left = False
 
         for dx, dy in all_directions:
             nx, ny = x + dx, y + dy
@@ -104,8 +102,6 @@ def count_edges(region_points):
                     diag_top_right = True
                 elif (dx, dy) == (1, -1):
                     diag_bottom_left = True
-                elif (dx, dy) == (1, 1):
-                    diag_bottom_right = True
 
         if left and not top:
             if not diag_top_left:
