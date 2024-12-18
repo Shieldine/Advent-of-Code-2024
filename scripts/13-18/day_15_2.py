@@ -101,6 +101,7 @@ for move in moves:
                     valid = False
                 end = end[0], end[1] - 1
             case "^":
+                # all da boxes up
                 if tile_map[end[0] - 1][end[1]] == "[" or tile_map[end[0] - 1][end[1]] == "]":
                     first = (end[0] - 1, end[1])
                     if tile_map[end[0] - 1][end[1]] == "[":
@@ -130,18 +131,46 @@ for move in moves:
                     valid = False
                 end = end[0], end[1] + 1
             case "v":
-                # TODO: all da boxes down!
-                while tile_map[end[0] + 1][end[1]] == "O":
-                    end = end[0] + 1, end[1]
-                if tile_map[end[0] + 1][end[1]] == "#":
-                    valid = False
+                # all da boxes down!
+                if tile_map[end[0] + 1][end[1]] == "[" or tile_map[end[0] + 1][end[1]] == "]":
+                    first = (end[0] + 1, end[1])
+                    if tile_map[end[0] + 1][end[1]] == "[":
+                        second = (end[0] + 1, end[1] + 1)
+                    else:
+                        second = (end[0] + 1, end[1] - 1)
+                    boxes = find_boxes([first, second], 1)
+
+                    if boxes == -1:
+                        valid = False
+                    else:
+                        positions_to_move.append(first)
+                        positions_to_move.append(second)
+                        positions_to_move.append(boxes)
                 end = end[0] + 1, end[1]
 
-        # TODO: move 'em!
         if valid:
-            tile_map[end[0]][end[1]] = "O"
-            tile_map[x][y] = "."
             pos = [x, y]
+            direction = (0, 0)
+            match move:
+                case "<":
+                    direction = (0, -1)
+                    positions_to_move = sorted(positions_to_move, key=lambda tup: tup[1])
+                case "^":
+                    direction = (-1, 0)
+                    positions_to_move = sorted(positions_to_move, key=lambda tup: tup[0])
+                case ">":
+                    direction = (0, 1)
+                    positions_to_move = sorted(positions_to_move, key=lambda tup: tup[1])[::-1]
+                case "v":
+                    direction = (1, 0)
+                    positions_to_move = sorted(positions_to_move, key=lambda tup: tup[0])[::-1]
+
+            print(positions_to_move)
+
+            for position in positions_to_move:
+                tile_map[position[0] + direction[0]][position[1] + direction[1]] = tile_map[position[0]][position[1]]
+                tile_map[position[0] + direction[0]][position[1]] = "."
+
     elif tile_map[x][y] != "#":
         pos = [x, y]
 
