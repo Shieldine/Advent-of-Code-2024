@@ -59,6 +59,7 @@ print(calculate_perimeter_cost(regions, garden_map))
 
 def count_edges(region_points):
     edges = 4
+    all_directions = [(-1, 0), (1, 0), (0, 1), (0, -1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
 
     region_points = list(region_points)
     region_points.sort(key=lambda tup: (tup[0], tup[1]))
@@ -77,8 +78,11 @@ def count_edges(region_points):
         edges += 4
 
         left = top = right = bottom = False
+        diag_top_left = diag_top_right = diag_bottom_left = diag_bottom_right = False
 
-        for dx, dy in directions:
+        # Define directions including diagonals
+
+        for dx, dy in all_directions:
             nx, ny = x + dx, y + dy
 
             if (nx, ny) in region_points:
@@ -94,20 +98,32 @@ def count_edges(region_points):
                 elif (dx, dy) == (0, -1):
                     left = True
                     edges -= 1
+                elif (dx, dy) == (-1, -1):
+                    diag_top_left = True
+                elif (dx, dy) == (-1, 1):
+                    diag_top_right = True
+                elif (dx, dy) == (1, -1):
+                    diag_bottom_left = True
+                elif (dx, dy) == (1, 1):
+                    diag_bottom_right = True
 
         if left and not top:
-            edges -= 1
+            if not diag_top_left:
+                edges -= 1
         if left and not bottom:
-            edges -= 1
+            if not diag_bottom_left:
+                edges -= 1
         if top and not left:
-            edges -= 1
+            if not diag_top_left:
+                edges -= 1
         if top and not right:
-            edges -= 1
+            if not diag_top_right:
+                edges -= 1
 
     return edges
 
 
-def calculate_side_cost(regions, garden_map):
+def calculate_side_cost(regions):
     cost = 0
 
     for region in regions:
@@ -116,4 +132,4 @@ def calculate_side_cost(regions, garden_map):
     return cost
 
 
-print(calculate_side_cost(regions, garden_map))
+print(calculate_side_cost(regions))
