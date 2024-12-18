@@ -57,11 +57,61 @@ def calculate_perimeter_cost(regions, garden_map):
 print(calculate_perimeter_cost(regions, garden_map))
 
 
+def count_edges(region_points):
+    edges = 4
+
+    region_points = list(region_points)
+    region_points.sort(key=lambda tup: (tup[0], tup[1]))
+
+    first = region_points[0]
+
+    if (first[0], first[1]+1) in region_points:
+        edges -= 1
+    if (first[0]+1, first[1]) in region_points:
+        edges -= 1
+
+    for idx, point in enumerate(region_points):
+        x, y = point
+        if idx == 0:
+            continue
+        edges += 4
+
+        left = top = right = bottom = False
+
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+
+            if (nx, ny) in region_points:
+                if (dx, dy) == (0, 1):
+                    right = True
+                    edges -= 1
+                elif (dx, dy) == (1, 0):
+                    bottom = True
+                    edges -= 1
+                elif (dx, dy) == (-1, 0):
+                    top = True
+                    edges -= 1
+                elif (dx, dy) == (0, -1):
+                    left = True
+                    edges -= 1
+
+        if left and not top:
+            edges -= 1
+        if left and not bottom:
+            edges -= 1
+        if top and not left:
+            edges -= 1
+        if top and not right:
+            edges -= 1
+
+    return edges
+
+
 def calculate_side_cost(regions, garden_map):
     cost = 0
 
     for region in regions:
-        pass
+        cost += count_edges(region) * len(region)
 
     return cost
 
