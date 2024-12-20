@@ -69,17 +69,40 @@ def execute_program(a, b, c, program):
 
 print(execute_program(a, b, c, program))
 
-correct_a = 35184441564177
+# brute force ain't gonna work
+# correct_a = 1
+#
+# while True:
+#     output = execute_program(correct_a, b, c, program)
+#
+#     split = output.split(",")
+#     split = [int(n) for n in split]
+#
+#     if split == program:
+#         break
+#
+#     correct_a += 1
+#
+# print(correct_a)
 
-while True:
-    output = execute_program(correct_a, b, c, program)
 
-    split = output.split(",")
-    split = [int(n) for n in split]
+candidates = [0]
 
-    if split == program:
-        break
+for idx in range(1, len(program) + 1):
+    next_candidates = []
 
-    correct_a += 1
+    for val in candidates:
+        for i in range(8):
+            target = (val * 8) + i
+            cur_execution = execute_program(target, 0, 0, program).split(",")
+            cur_execution = [int(num) for num in cur_execution]
 
-print(correct_a)
+            if cur_execution == program[len(program) - idx:len(program)]:
+                next_candidates.append(target)
+
+    candidates = next_candidates
+
+test_program = execute_program(min(candidates), b, c, program).split(",")
+test_program = [int(num) for num in test_program]
+
+print(min(candidates))
