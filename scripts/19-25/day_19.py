@@ -28,14 +28,22 @@ def can_form_string(target, substrings):
     return False
 
 
+count_cache = {}
+
+
 def count_formations(target, substrings):
     count = 0
+    if target in count_cache.keys():
+        return count_cache[target]
+
     if not target:
         return 1
     for substring in substrings:
         if target.startswith(substring):
             if can_form_string(target[len(substring):], substrings):
                 count += count_formations(target[len(substring):], substrings)
+
+    count_cache[target] = count
     return count
 
 
@@ -43,7 +51,6 @@ formation_count = 0
 
 for idx, design in enumerate(desired_designs):
     if can_form_string(design, available_towels):
-        print(f"{idx} of {len(desired_designs)}")
         count += 1
         formation_count += count_formations(design, available_towels)
 
