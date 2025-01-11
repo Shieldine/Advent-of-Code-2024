@@ -6,4 +6,3 @@ with open("../../inputs/19-25/day_21.txt") as f:
             sequences.append(line.strip())
 
 sequences = [list(sequence) for sequence in sequences]
-

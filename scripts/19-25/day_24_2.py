@@ -10,7 +10,6 @@ with open("../../inputs/19-25/day_24.txt") as file:
         else:
             operations.append(line.strip())
 
-
 """
 we need to find errors in operations
 

@@ -45,7 +45,6 @@ with open("../../inputs/19-25/day_25.txt") as file:
     else:
         keys.append(convert_schema(schema))
 
-
 fitting = 0
 
 for lock in locks:

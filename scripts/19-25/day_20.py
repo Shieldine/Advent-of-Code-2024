@@ -1,5 +1,5 @@
-import heapq
 import copy
+import heapq
 
 directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]  # N, E, S, W
 
@@ -13,7 +13,6 @@ track = [list(line) for line in track]
 
 
 def solve_maze(maze):
-
     # find start and end positions
     start = end = None
     for y, row in enumerate(maze):
@@ -59,11 +58,10 @@ blockage_indices = []
 
 for idx, row in enumerate(track):
     for idx_c, col in enumerate(row):
-        if 0 < idx < len(track)-1:
-            if 0 < idx_c < len(track[0])-1:
+        if 0 < idx < len(track) - 1:
+            if 0 < idx_c < len(track[0]) - 1:
                 if track[idx][idx_c] == '#':
                     blockage_indices.append((idx, idx_c))
-
 
 base_cost = solve_maze(track)
 

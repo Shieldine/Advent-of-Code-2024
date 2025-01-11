@@ -94,5 +94,3 @@ for idx, row in enumerate(tile_map):
             score += idx * 100 + idx_c
 
 print(score)
-
-

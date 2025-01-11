@@ -53,6 +53,7 @@ while True:
 
         return -1
 
+
     steps = solve_maze(grid, START, END)
     if steps == -1:
         print("Blockage found")

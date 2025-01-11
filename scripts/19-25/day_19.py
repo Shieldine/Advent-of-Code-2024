@@ -1,5 +1,3 @@
-from itertools import combinations_with_replacement
-
 available_towels = []
 desired_designs = []
 

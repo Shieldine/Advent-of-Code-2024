@@ -2,7 +2,7 @@ import heapq
 
 WIDTH = 71
 HEIGHT = 71
-NUM_BYTES = 1024-1
+NUM_BYTES = 1024 - 1
 
 START = (0, 0)
 END = (WIDTH - 1, HEIGHT - 1)

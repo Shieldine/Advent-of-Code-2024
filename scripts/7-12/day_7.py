@@ -1,6 +1,4 @@
-from functools import reduce
 from itertools import product
-from operator import mul
 
 
 def read_input():
@@ -26,6 +24,7 @@ def find_sum_of_valid_equations(equation_list, extended=False):
                 num += equation[0]
     return num
 
+
 def try_extended_possibilities(equation):
     result = equation[0]
     numbers = equation[1]
@@ -37,11 +36,11 @@ def try_extended_possibilities(equation):
         res = numbers[0]
         for i in range(len(combination)):
             if combination[i] == "*":
-                res = res * numbers[i+1]
+                res = res * numbers[i + 1]
             elif combination[i] == "+":
-                res = res + numbers[i+1]
+                res = res + numbers[i + 1]
             elif combination[i] == "||":
-                res = int(str(res) + str(numbers[i+1]))
+                res = int(str(res) + str(numbers[i + 1]))
         if res == result:
             return True
 
@@ -50,16 +49,16 @@ def try_possibilities(equation):
     result = equation[0]
     numbers = equation[1]
 
-    num_combinations = (len(numbers)-1)
+    num_combinations = (len(numbers) - 1)
     combinations = list(product(['*', '+'], repeat=num_combinations))
 
     for combination in combinations:
         res = numbers[0]
         for i in range(len(combination)):
             if combination[i] == "*":
-                res = res * numbers[i+1]
+                res = res * numbers[i + 1]
             else:
-                res = res + numbers[i+1]
+                res = res + numbers[i + 1]
         if res == result:
             return True
 
