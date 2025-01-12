@@ -1,3 +1,4 @@
+NUM_ROBOTS = 25
 sequences = []
 
 with open("../../inputs/19-25/day_21.txt") as f:
@@ -123,30 +124,37 @@ class DirectionalKeypad(KeypadBase):
         return way
 
 
+def calculate(sequence_list, keypads):
+    score = 0
+
+    for sequence in sequence_list:
+        presses = sequence
+
+        for cur_keypad in keypads:
+            new_presses = []
+
+            for cur_key in presses:
+                new_presses.extend(cur_keypad.press_button(cur_key))
+
+            presses = new_presses
+        score += len(presses) * int("".join(sequence)[:-1])
+
+    return score
+
+
 robot_1 = NumericalKeypad()
 robot_2 = DirectionalKeypad()
 robot_3 = DirectionalKeypad()
 
 all_keypads = [robot_1, robot_2, robot_3]
-presses = []
-all_presses = {}
 
-for sequence in sequences:
-    presses = sequence
+print(calculate(sequences, all_keypads))
 
-    for cur_keypad in all_keypads:
-        new_presses = []
 
-        for cur_key in presses:
-            new_presses.extend(cur_keypad.press_button(cur_key))
+# part two
+all_keypads = [NumericalKeypad()]
 
-        presses = new_presses
-    all_presses["".join(sequence)] = presses.copy()
+for i in range(NUM_ROBOTS):
+    all_keypads.append(DirectionalKeypad())
 
-score = 0
-
-for cur_key, val in all_presses.items():
-    print(cur_key, len(val), "".join(val))
-    score += len(val) * int(cur_key[:-1])
-
-print(score)
+print(calculate(sequences, all_keypads))
