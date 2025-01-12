@@ -35,6 +35,10 @@ class NumericalKeypad:
             up_down_first = True
             self.position = (self.position[0] - 1, self.position[1])
 
+        # prioritise up and down over right
+        if (pos[1] - self.position[1]) > 0 and not (self.position[0] < 3 and pos[0] == 3 and self.position[1] == 0):
+            up_down_first = True
+
         if up_down_first:
             # up/down
             dx = pos[0] - self.position[0]
@@ -115,10 +119,14 @@ class DirectionalKeypad:
             self.position = (self.position[0] + 1, self.position[1])
 
         # decide if we should go left/right or up/down first
-        up_down_first = True
+        up_down_first = False
 
-        if self.position[1] == 2 and pos[1] == 2 or self.position[1] == 0 and pos[1] == 0:
-            up_down_first = False
+        # that's if we'd run into the None
+        if self.position[0] == 0 and pos == (0, 1):
+            up_down_first = True
+        # here we prioritise up and down over right
+        if (pos[1] - self.position[1]) > 0:
+            up_down_first = True
 
         if up_down_first:
             # up/down
