@@ -27,36 +27,65 @@ class NumericalKeypad:
                 if col == key:
                     pos = (idx, idx_c)
 
+        up_down_first = False
+
         # check if we'd run into the None
         if self.position[0] == 3 and pos[0] < 3 and pos[1] == 0:
             way.append("^")
+            up_down_first = True
             self.position = (self.position[0] - 1, self.position[1])
 
-        # left/right
-        dy = pos[1] - self.position[1]
-        direction = -1, "<"
+        if up_down_first:
+            # up/down
+            dx = pos[0] - self.position[0]
+            direction = -1, "^"
 
-        if dy > 0:
-            direction = 1, ">"
+            if dx > 0:
+                direction = 1, "v"
 
-        for i in range(abs(dy)):
-            ny = self.position[1] + direction[0]
+            for i in range(abs(dx)):
+                nx = self.position[0] + direction[0]
 
-            way.append(direction[1])
-            self.position = (self.position[0], ny)
+                way.append(direction[1])
+                self.position = (nx, self.position[1])
 
-        # up/down
-        dx = pos[0] - self.position[0]
-        direction = -1, "^"
+            # left/right
+            dy = pos[1] - self.position[1]
+            direction = -1, "<"
 
-        if dx > 0:
-            direction = 1, "v"
+            if dy > 0:
+                direction = 1, ">"
 
-        for i in range(abs(dx)):
-            nx = self.position[0] + direction[0]
+            for i in range(abs(dy)):
+                ny = self.position[1] + direction[0]
 
-            way.append(direction[1])
-            self.position = (nx, self.position[1])
+                way.append(direction[1])
+                self.position = (self.position[0], ny)
+        else:
+            # left/right
+            dy = pos[1] - self.position[1]
+            direction = -1, "<"
+
+            if dy > 0:
+                direction = 1, ">"
+
+            for i in range(abs(dy)):
+                ny = self.position[1] + direction[0]
+
+                way.append(direction[1])
+                self.position = (self.position[0], ny)
+            # up/down
+            dx = pos[0] - self.position[0]
+            direction = -1, "^"
+
+            if dx > 0:
+                direction = 1, "v"
+
+            for i in range(abs(dx)):
+                nx = self.position[0] + direction[0]
+
+                way.append(direction[1])
+                self.position = (nx, self.position[1])
 
         way.append("A")
         return way
@@ -85,30 +114,63 @@ class DirectionalKeypad:
             way.append("v")
             self.position = (self.position[0] + 1, self.position[1])
 
-        # left/right
-        dy = pos[1] - self.position[1]
-        direction = -1, "<"
+        # decide if we should go left/right or up/down first
+        up_down_first = True
 
-        if dy > 0:
-            direction = 1, ">"
+        if self.position[1] == 2 and pos[1] == 2 or self.position[1] == 0 and pos[1] == 0:
+            up_down_first = False
 
-        for i in range(abs(dy)):
-            ny = self.position[1] + direction[0]
-            way.append(direction[1])
-            self.position = (self.position[0], ny)
+        if up_down_first:
+            # up/down
+            dx = pos[0] - self.position[0]
+            direction = -1, "^"
 
-        # up/down
-        dx = pos[0] - self.position[0]
-        direction = -1, "^"
+            if dx > 0:
+                direction = 1, "v"
 
-        if dx > 0:
-            direction = 1, "v"
+            for i in range(abs(dx)):
+                nx = self.position[0] + direction[0]
 
-        for i in range(abs(dx)):
-            nx = self.position[0] + direction[0]
+                way.append(direction[1])
+                self.position = (nx, self.position[1])
 
-            way.append(direction[1])
-            self.position = (nx, self.position[1])
+            # left-right
+            dy = pos[1] - self.position[1]
+            direction = -1, "<"
+
+            if dy > 0:
+                direction = 1, ">"
+
+            for i in range(abs(dy)):
+                ny = self.position[1] + direction[0]
+                way.append(direction[1])
+                self.position = (self.position[0], ny)
+        else:
+            # left-right
+            dy = pos[1] - self.position[1]
+            direction = -1, "<"
+
+            if dy > 0:
+                direction = 1, ">"
+
+            for i in range(abs(dy)):
+                ny = self.position[1] + direction[0]
+                way.append(direction[1])
+                self.position = (self.position[0], ny)
+
+            # up/down
+            dx = pos[0] - self.position[0]
+            direction = -1, "^"
+
+            if dx > 0:
+                direction = 1, "v"
+
+            for i in range(abs(dx)):
+                nx = self.position[0] + direction[0]
+
+                way.append(direction[1])
+                self.position = (nx, self.position[1])
+
 
         way.append("A")
         return way
