@@ -1,5 +1,3 @@
-import sys
-
 sequences = []
 
 with open("../../inputs/19-25/day_21.txt") as f:
@@ -29,23 +27,10 @@ class NumericalKeypad:
                 if col == key:
                     pos = (idx, idx_c)
 
-        # first up/down
-        dx = pos[0] - self.position[0]
-        direction = -1, "^"
-
-        if dx > 0:
-            direction = 1, "v"
-
-        for i in range(abs(dx)):
-            nx = self.position[0] + direction[0]
-
-            if self.keypad[nx][self.position[1]] is not None:
-                way.append(direction[1])
-                self.position = (nx, self.position[1])
-            else:
-                way.append("v")
-                way.append(">")
-                self.position = (nx, self.position[1] + 1)
+        # check if we'd run into the None
+        if self.position[0] == 3 and pos[0] < 3 and pos[1] == 0:
+            way.append("^")
+            self.position = (self.position[0] - 1, self.position[1])
 
         # left/right
         dy = pos[1] - self.position[1]
@@ -59,6 +44,19 @@ class NumericalKeypad:
 
             way.append(direction[1])
             self.position = (self.position[0], ny)
+
+        # up/down
+        dx = pos[0] - self.position[0]
+        direction = -1, "^"
+
+        if dx > 0:
+            direction = 1, "v"
+
+        for i in range(abs(dx)):
+            nx = self.position[0] + direction[0]
+
+            way.append(direction[1])
+            self.position = (nx, self.position[1])
 
         way.append("A")
         return way
@@ -82,23 +80,10 @@ class DirectionalKeypad:
                 if col == key:
                     pos = (idx, idx_c)
 
-        # first up/down
-        dx = pos[0] - self.position[0]
-        direction = -1, "^"
-
-        if dx > 0:
-            direction = 1, "v"
-
-        for i in range(abs(dx)):
-            nx = self.position[0] + direction[0]
-
-            if self.keypad[nx][self.position[1]] is not None:
-                way.append(direction[1])
-                self.position = (nx, self.position[1])
-            else:
-                way.append("^")
-                way.append(">")
-                self.position = (nx, self.position[1] + 1)
+        # check if we'd run into None
+        if self.position[0] == 0 and pos == (1, 0):
+            way.append("v")
+            self.position = (self.position[0] + 1, self.position[1])
 
         # left/right
         dy = pos[1] - self.position[1]
@@ -109,9 +94,21 @@ class DirectionalKeypad:
 
         for i in range(abs(dy)):
             ny = self.position[1] + direction[0]
-
             way.append(direction[1])
             self.position = (self.position[0], ny)
+
+        # up/down
+        dx = pos[0] - self.position[0]
+        direction = -1, "^"
+
+        if dx > 0:
+            direction = 1, "v"
+
+        for i in range(abs(dx)):
+            nx = self.position[0] + direction[0]
+
+            way.append(direction[1])
+            self.position = (nx, self.position[1])
 
         way.append("A")
         return way
@@ -137,10 +134,10 @@ for sequence in sequences:
         presses = new_presses
     all_presses["".join(sequence)] = presses.copy()
 
-print(all_presses)
 score = 0
 
 for key, val in all_presses.items():
+    print(key, len(val), "".join(val))
     score += len(val) * int(key[:-1])
 
 print(score)
