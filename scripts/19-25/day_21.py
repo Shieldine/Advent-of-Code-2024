@@ -10,6 +10,8 @@ with open("../../inputs/19-25/day_21.txt") as f:
 
 sequences = [list(sequence) for sequence in sequences]
 
+path_cache = {}
+
 
 class KeypadBase:
     def __init__(self, keypad, position):
@@ -19,7 +21,6 @@ class KeypadBase:
         for idx, row in enumerate(self.keypad):
             for idx_c, col in enumerate(row):
                 self.key_positions[col] = (idx, idx_c)
-        self.path_cache = {}
 
     def move_vertically(self, way, pos):
         dx = pos[0] - self.position[0]
@@ -64,8 +65,8 @@ class NumericalKeypad(KeypadBase):
         pos = self.key_positions[key]
         cache_key = (self.position, key, pos)
 
-        if cache_key in self.path_cache:
-            cached_way = self.path_cache[cache_key][:]
+        if cache_key in path_cache:
+            cached_way = path_cache[cache_key][:]
             self.position = pos
             return cached_way
 
@@ -89,7 +90,7 @@ class NumericalKeypad(KeypadBase):
             self.move_vertically(way, pos)
 
         way.append("A")
-        self.path_cache[cache_key] = way[:]
+        path_cache[cache_key] = way[:]
         return way
 
 
@@ -107,8 +108,8 @@ class DirectionalKeypad(KeypadBase):
         pos = self.key_positions[key]
         cache_key = (self.position, key, pos)
 
-        if cache_key in self.path_cache:
-            cached_way = self.path_cache[cache_key][:]
+        if cache_key in path_cache:
+            cached_way = path_cache[cache_key][:]
             self.position = pos
             return cached_way
 
@@ -130,7 +131,7 @@ class DirectionalKeypad(KeypadBase):
 
         way.append("A")
 
-        self.path_cache[cache_key] = way[:]
+        path_cache[cache_key] = way[:]
         return way
 
 
@@ -161,7 +162,6 @@ robot_3 = DirectionalKeypad()
 all_keypads = [robot_1, robot_2, robot_3]
 
 print(calculate(sequences, all_keypads))
-
 
 # part two
 all_keypads = [NumericalKeypad()]
