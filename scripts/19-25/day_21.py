@@ -1,3 +1,5 @@
+import time
+
 NUM_ROBOTS = 25
 sequences = []
 
@@ -13,6 +15,11 @@ class KeypadBase:
     def __init__(self, keypad, position):
         self.keypad = keypad
         self.position = position
+        self.key_positions = {}
+        for idx, row in enumerate(self.keypad):
+            for idx_c, col in enumerate(row):
+                self.key_positions[col] = (idx, idx_c)
+        self.path_cache = {}
 
     def move_vertically(self, way, pos):
         dx = pos[0] - self.position[0]
@@ -54,12 +61,13 @@ class NumericalKeypad(KeypadBase):
 
     def press_button(self, key):
         way = []
-        pos = None
+        pos = self.key_positions[key]
+        cache_key = (self.position, key, pos)
 
-        for idx, row in enumerate(self.keypad):
-            for idx_c, col in enumerate(row):
-                if col == key:
-                    pos = (idx, idx_c)
+        if cache_key in self.path_cache:
+            cached_way = self.path_cache[cache_key][:]
+            self.position = pos
+            return cached_way
 
         up_down_first = False
 
@@ -81,6 +89,7 @@ class NumericalKeypad(KeypadBase):
             self.move_vertically(way, pos)
 
         way.append("A")
+        self.path_cache[cache_key] = way[:]
         return way
 
 
@@ -95,21 +104,20 @@ class DirectionalKeypad(KeypadBase):
         )
 
     def press_button(self, key):
+        pos = self.key_positions[key]
+        cache_key = (self.position, key, pos)
+
+        if cache_key in self.path_cache:
+            cached_way = self.path_cache[cache_key][:]
+            self.position = pos
+            return cached_way
+
         way = []
-        pos = None
-
-        for idx, row in enumerate(self.keypad):
-            for idx_c, col in enumerate(row):
-                if col == key:
-                    pos = (idx, idx_c)
-
         up_down_first = False
 
-        # that's if we'd run into the None
         if self.position[0] == 0 and pos == (0, 1):
             up_down_first = True
 
-        # here we prioritise up and down over right
         if (pos[1] - self.position[1]) > 0:
             up_down_first = True
 
@@ -121,10 +129,13 @@ class DirectionalKeypad(KeypadBase):
             self.move_vertically(way, pos)
 
         way.append("A")
+
+        self.path_cache[cache_key] = way[:]
         return way
 
 
 def calculate(sequence_list, keypads):
+    start_time = time.time()
     score = 0
 
     for sequence in sequence_list:
@@ -139,6 +150,7 @@ def calculate(sequence_list, keypads):
             presses = new_presses
         score += len(presses) * int("".join(sequence)[:-1])
 
+    print(time.time() - start_time)
     return score
 
 
