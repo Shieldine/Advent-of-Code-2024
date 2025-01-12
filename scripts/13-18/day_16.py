@@ -1,65 +1,73 @@
-import heapq
+with open("../../inputs/13-18/day_16.txt") as f:
+    maze = f.read()
+
+maze = [list(row) for row in maze.splitlines()]
 
 
-def solve_maze(maze):
-    maze = [list(row) for row in maze.splitlines()]
-    directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]  # N, E, S, W
+def print_maze(maze, path=None):
+    if path is not None:
+        for y, x in path:
+            maze[y][x] = '+'
 
-    # find start and end positions
-    start = end = None
-    for y, row in enumerate(maze):
-        for x, cell in enumerate(row):
-            if cell == 'S':
-                start = (y, x)
-            elif cell == 'E':
-                end = (y, x)
-
-    # manhattan distance heuristic
-    def heuristic(pos, end):
-        return abs(pos[0] - end[0]) + abs(pos[1] - end[1])
-
-    # Priority queue: (total_cost, current_cost, position, direction, path)
-    pq = []
-    heapq.heappush(pq, (0, 0, start, 1, []))
-
-    visited = set()
-
-    while pq:
-        total_cost, current_cost, (y, x), direction, path = heapq.heappop(pq)
-
-        if (y, x) == end:
-            full_path = path + [(y, x)]
-            for (py, px) in full_path:
-                if maze[py][px] != 'S' and maze[py][px] != 'E':
-                    maze[py][px] = '+'
-            return total_cost, full_path, maze
-
-        if (y, x, direction) in visited:
-            continue
-        visited.add((y, x, direction))
-
-        for i, (dy, dx) in enumerate(directions):
-            ny, nx = y + dy, x + dx
-
-            if 0 <= ny < len(maze) and 0 <= nx < len(maze[0]) and maze[ny][nx] != '#':
-                move_cost = 1
-                turn_cost = 1000 if i != direction else 0
-                new_cost = current_cost + move_cost + turn_cost
-                new_path = path + [(y, x)]  # Add current position to path
-                heapq.heappush(pq, (new_cost + heuristic((ny, nx), end), new_cost, (ny, nx), i, new_path))
-
-    return -1, [], maze
-
-
-def print_maze(maze):
     for row in maze:
         print(''.join(row))
 
 
-with open("../../inputs/13-18/day_16.txt") as f:
-    maze = f.read()
+start = end = None
+for y, row in enumerate(maze):
+    for x, cell in enumerate(row):
+        if cell == 'S':
+            start = (y, x)
+        elif cell == 'E':
+            end = (y, x)
 
-cost, path, maze_with_path = solve_maze(maze)
-print(f"Cost to reach the end: {cost}")
-print("\nMaze with path:")
-print_maze(maze_with_path)
+directions = [(0, 1), (-1, 0), (0, -1), (1, 0)]  # E, S, W, N
+
+
+def find_ways(grid):
+    queue = [(start, [start], 0, 0)]  # start, history, cost, direction (start facing east)
+    paths = []
+    visited = {}  # holds visited positions including the direction and cost, as in: ((y, x), direction): cost
+
+    while queue:
+        (y, x), cur_history, cur_cost, cur_direction = queue.pop(0)
+
+        if (y, x) == end:
+            paths.append((cur_history, cur_cost))
+            continue
+
+        if ((y, x), cur_direction) in visited and visited[((y, x), cur_direction)] < cur_cost:  # last one checks if
+            # we found a possibly shorter path even if we've visited this position before
+            continue
+
+        visited[((y, x), cur_direction)] = cur_cost
+
+        for direction, (dy, dx) in enumerate(directions):
+            new_y, new_x = y + dy, x + dx
+
+            # don't keep going if we've hit a border or if we've been here before (prevent loops)
+            if grid[new_y][new_x] == '#' or (new_y, new_x) in cur_history:
+                continue
+
+            if cur_direction == direction:
+                # note: we use the 'cur_history + [(new_y, new_x)]' syntax to explicitly construct a new list
+                # python lists are passed by reference, so if we just did .append and then passed, we'd work with
+                # one list in all iterations
+                queue.append(((new_y, new_x), cur_history + [(new_y, new_x)], cur_cost + 1, direction))  # move forward
+            else:
+                queue.append(((y, x), cur_history, cur_cost + 1000, direction))  # turn
+
+    return paths
+
+
+all_paths = find_ways(maze)
+min_cost = min([cost for _, cost in all_paths])
+shortest_paths = [path for path, cost in all_paths if cost == min_cost]
+
+tiles = set()
+
+for path in shortest_paths:
+    tiles.update(path)
+
+print(min_cost)
+print(len(tiles))
