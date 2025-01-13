@@ -132,19 +132,30 @@ for i in range(2):
                 temp_robot.position = (i, j)
                 sequence_cache[((i, j), key)] = temp_robot.press_button(key), temp_robot.position
 
+cost_cache = {}
+
 
 def calculate_cost(key, robots, idx):
+    cache_key = (robots[idx].position, key, idx)
+
+    if cache_key in cost_cache:
+        cost, final_pos = cost_cache[cache_key]
+        robots[idx].position = final_pos
+        return cost
+
     new_sequence = sequence_cache[(robots[idx].position, key)]
 
     if idx == 0:
         robots[idx].position = new_sequence[1]
+        cost_cache[cache_key] = len(new_sequence[0]), robots[idx].position
         return len(new_sequence[0])
-    cost = 0
 
+    cost = 0
     for cur_key in new_sequence[0]:
         robots[idx].position = new_sequence[1]
         cost += calculate_cost(cur_key, robots, idx - 1)
 
+    cost_cache[cache_key] = cost, robots[idx].position
     return cost
 
 
@@ -164,7 +175,6 @@ def calculate(sequence_list, keypads):
 
         # calculate the rest
         for idx, key in enumerate(presses):
-            print(f"{idx} of {len(presses)}")
             cur_score += calculate_cost(key, keypads, len(keypads) - 1)
         score += cur_score * int("".join(sequence)[:-1])
 
