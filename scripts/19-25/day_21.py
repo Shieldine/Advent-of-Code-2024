@@ -29,7 +29,7 @@ class KeypadBase:
         if dx > 0:
             direction = 1, "v"
 
-        for i in range(abs(dx)):
+        for _ in range(abs(dx)):
             nx = self.position[0] + direction[0]
 
             way.append(direction[1])
@@ -42,7 +42,7 @@ class KeypadBase:
         if dy > 0:
             direction = 1, ">"
 
-        for i in range(abs(dy)):
+        for _ in range(abs(dy)):
             ny = self.position[1] + direction[0]
             way.append(direction[1])
             self.position = (self.position[0], ny)
@@ -137,10 +137,14 @@ class DirectionalKeypad(KeypadBase):
 
 def calculate(sequence_list, keypads):
     start_time = time.time()
+    first_robot = NumericalKeypad()
+
     score = 0
 
     for sequence in sequence_list:
-        presses = sequence
+        presses = []
+        for key in sequence:
+            presses.extend(first_robot.press_button(key))
 
         for cur_keypad in keypads:
             new_presses = []
@@ -155,18 +159,17 @@ def calculate(sequence_list, keypads):
     return score
 
 
-robot_1 = NumericalKeypad()
 robot_2 = DirectionalKeypad()
 robot_3 = DirectionalKeypad()
 
-all_keypads = [robot_1, robot_2, robot_3]
+all_keypads = [robot_2, robot_3]
 
 print(calculate(sequences, all_keypads))
 
 # part two
-all_keypads = [NumericalKeypad()]
+all_keypads = []
 
-for i in range(NUM_ROBOTS):
+for _ in range(NUM_ROBOTS):
     all_keypads.append(DirectionalKeypad())
 
 print(calculate(sequences, all_keypads))
