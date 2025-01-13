@@ -149,16 +149,16 @@ def calculate_cost(key, robots, idx):
         robots[idx].position = final_pos
         return cost
 
-    new_sequence = sequence_cache[(robots[idx].position, key)]
+    sequence, position = sequence_cache[(robots[idx].position, key)]
 
     if idx == 0:
-        robots[idx].position = new_sequence[1]
-        cost_cache[cache_key] = len(new_sequence[0]), robots[idx].position
-        return len(new_sequence[0])
+        robots[idx].position = position
+        cost_cache[cache_key] = len(sequence), robots[idx].position
+        return len(sequence)
 
     cost = 0
-    for cur_key in new_sequence[0]:
-        robots[idx].position = new_sequence[1]
+    for cur_key in sequence:
+        robots[idx].position = position
         cost += calculate_cost(cur_key, robots, idx - 1)
 
     cost_cache[cache_key] = cost, robots[idx].position
