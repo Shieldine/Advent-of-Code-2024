@@ -1,6 +1,6 @@
 import time
 
-NUM_ROBOTS = 5
+NUM_ROBOTS = 25
 sequences = []
 
 with open("../../inputs/19-25/day_21.txt") as f:
@@ -102,14 +102,16 @@ class DirectionalKeypad(KeypadBase):
         up_down_first = False
 
         if self.position[0] == 0 and pos == (1, 0):
-            way.append("v")
-            self.position = (self.position[0] + 1, self.position[1])
+            up_down_first = True
 
         if self.position[0] == 0 and pos == (0, 1):
             up_down_first = True
 
         if (pos[1] - self.position[1]) > 0:
             up_down_first = True
+
+        if self.position == (1, 0) and pos != (1, 0):
+            up_down_first = False
 
         if up_down_first:
             self.move_vertically(way, pos)
