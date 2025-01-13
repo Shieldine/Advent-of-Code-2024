@@ -10,8 +10,6 @@ with open("../../inputs/19-25/day_21.txt") as f:
 
 sequences = [list(sequence) for sequence in sequences]
 
-path_cache = {}
-
 
 class KeypadBase:
     def __init__(self, keypad, position):
@@ -63,12 +61,6 @@ class NumericalKeypad(KeypadBase):
     def press_button(self, key):
         way = []
         pos = self.key_positions[key]
-        cache_key = (self.position, key, pos)
-
-        if cache_key in path_cache:
-            cached_way = path_cache[cache_key][:]
-            self.position = pos
-            return cached_way
 
         up_down_first = False
 
@@ -90,7 +82,6 @@ class NumericalKeypad(KeypadBase):
             self.move_vertically(way, pos)
 
         way.append("A")
-        path_cache[cache_key] = way[:]
         return way
 
 
@@ -105,15 +96,9 @@ class DirectionalKeypad(KeypadBase):
         )
 
     def press_button(self, key):
-        pos = self.key_positions[key]
-        cache_key = (self.position, key, pos)
-
-        if cache_key in path_cache:
-            cached_way = path_cache[cache_key][:]
-            self.position = pos
-            return cached_way
-
         way = []
+        pos = self.key_positions[key]
+
         up_down_first = False
 
         if self.position[0] == 0 and pos == (0, 1):
@@ -130,8 +115,6 @@ class DirectionalKeypad(KeypadBase):
             self.move_vertically(way, pos)
 
         way.append("A")
-
-        path_cache[cache_key] = way[:]
         return way
 
 
