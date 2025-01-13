@@ -135,6 +135,21 @@ class DirectionalKeypad(KeypadBase):
         return way
 
 
+sequence_cache = {}  # position, key -> sequence, new_pos
+
+temp_robot = DirectionalKeypad()
+
+for i in range(2):
+    for j in range(3):
+        if (i, j) == (0, 0):
+            continue
+
+        for row in temp_robot.keypad:
+            for key in row:
+                temp_robot.position = (i, j)
+                sequence_cache[((i, j), key)] = temp_robot.press_button(key), temp_robot.position
+
+
 def calculate(sequence_list, keypads):
     start_time = time.time()
     first_robot = NumericalKeypad()
@@ -143,14 +158,20 @@ def calculate(sequence_list, keypads):
 
     for sequence in sequence_list:
         presses = []
+
+        # calculate presses of numerical keyboard
         for key in sequence:
             presses.extend(first_robot.press_button(key))
 
-        for cur_keypad in keypads:
+        # calculate the rest
+        for idx, cur_keypad in enumerate(keypads):
+            print(idx)
             new_presses = []
 
             for cur_key in presses:
-                new_presses.extend(cur_keypad.press_button(cur_key))
+                cached = sequence_cache[(cur_keypad.position, cur_key)]
+                cur_keypad.position = cached[1]
+                new_presses.extend(cached[0])
 
             presses = new_presses
         score += len(presses) * int("".join(sequence)[:-1])
