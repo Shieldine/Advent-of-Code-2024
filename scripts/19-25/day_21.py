@@ -133,6 +133,21 @@ for i in range(2):
                 sequence_cache[((i, j), key)] = temp_robot.press_button(key), temp_robot.position
 
 
+def calculate_cost(key, robots, idx):
+    new_sequence = sequence_cache[(robots[idx].position, key)]
+
+    if idx == 0:
+        robots[idx].position = new_sequence[1]
+        return len(new_sequence[0])
+    cost = 0
+
+    for cur_key in new_sequence[0]:
+        robots[idx].position = new_sequence[1]
+        cost += calculate_cost(cur_key, robots, idx - 1)
+
+    return cost
+
+
 def calculate(sequence_list, keypads):
     start_time = time.time()
     first_robot = NumericalKeypad()
@@ -140,6 +155,7 @@ def calculate(sequence_list, keypads):
     score = 0
 
     for sequence in sequence_list:
+        cur_score = 0
         presses = []
 
         # calculate presses of numerical keyboard
@@ -147,17 +163,10 @@ def calculate(sequence_list, keypads):
             presses.extend(first_robot.press_button(key))
 
         # calculate the rest
-        for idx, cur_keypad in enumerate(keypads):
-            print(idx)
-            new_presses = []
-
-            for cur_key in presses:
-                cached = sequence_cache[(cur_keypad.position, cur_key)]
-                cur_keypad.position = cached[1]
-                new_presses.extend(cached[0])
-
-            presses = new_presses
-        score += len(presses) * int("".join(sequence)[:-1])
+        for idx, key in enumerate(presses):
+            print(f"{idx} of {len(presses)}")
+            cur_score += calculate_cost(key, keypads, len(keypads) - 1)
+        score += cur_score * int("".join(sequence)[:-1])
 
     print(time.time() - start_time)
     return score
