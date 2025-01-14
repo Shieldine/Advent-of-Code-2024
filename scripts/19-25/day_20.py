@@ -23,24 +23,23 @@ for y, row in enumerate(track):
             end = (y, x)
 
 
-# manhattan distance heuristic
-def heuristic(pos, end):
-    return abs(pos[0] - end[0]) + abs(pos[1] - end[1])
+def manhattan_distance(pos, goal):
+    return abs(pos[0] - goal[0]) + abs(pos[1] - goal[1])
 
 
+# solve maze once with backtracking
 def solve_maze(maze):
-    # priority queue: (total_cost, current_cost, position, direction)
-    # direction is an index into `directions` (0=N, 1=E, 2=S, 3=W)
+    # priority queue: (total_cost, current_cost, position, direction, path)
     pq = []
-    heapq.heappush(pq, (0, 0, start, 1))
+    heapq.heappush(pq, (0, 0, start, 1, []))
 
     visited = set()
 
     while pq:
-        total_cost, current_cost, (y, x), direction = heapq.heappop(pq)
+        total_cost, current_cost, (y, x), direction, path = heapq.heappop(pq)
 
         if (y, x) == end:
-            return total_cost
+            return path + [(y, x)]
 
         if (y, x, direction) in visited:
             continue
@@ -50,55 +49,49 @@ def solve_maze(maze):
             ny, nx = y + dy, x + dx
 
             if 0 <= ny < len(maze) and 0 <= nx < len(maze[0]) and maze[ny][nx] != '#':
-                heapq.heappush(pq, (current_cost + heuristic((ny, nx), end), current_cost + 1, (ny, nx), i))
+                new_path = path + [(y, x)]
+                heapq.heappush(pq,
+                               (current_cost + 1 + manhattan_distance((ny, nx), end), current_cost + 1, (ny, nx), i,
+                                new_path))
 
-    return -1
+    return []
 
 
-blockage_indices = []
+base_path = solve_maze(track)
 
-for idx, row in enumerate(track):
-    for idx_c, col in enumerate(row):
-        if 0 < idx < len(track) - 1 and 0 < idx_c < len(track[0]) - 1:
-            if track[idx][idx_c] == '#':
-                blockage_indices.append((idx, idx_c))
 
-base_cost = solve_maze(track)
+# "cheating" means jumping to a different position on the base path.
+# for each position, we need to scan if another one is reachable with our k
+# if that's the case, jump and check how many picoseconds we saved
 
-track_nums = {}
+def find_shortcuts(path, k):
+    saved_costs = {}
 
-for idx, block in enumerate(blockage_indices):
-    # don't try blocks that are far away from the points
-    if heuristic(block, start) + heuristic(block, end) > base_cost:
-        continue
+    for idx, point in enumerate(path):
+        for idx_2, second_point in enumerate(path):
+            if point == second_point:
+                continue
+            if idx > idx_2:
+                continue
+            distance = manhattan_distance(point, second_point)
+            if distance <= k:
+                cur_saved = (idx_2 - idx) - distance
+                if cur_saved < 100:  # we don't care if it's less than 100 picoseconds saved
+                    continue
+                if cur_saved not in saved_costs:
+                    saved_costs[cur_saved] = 1
+                else:
+                    saved_costs[cur_saved] += 1
 
-    direction_count = 0
-    for direction in directions:
-        dx, dy = block[0] + direction[0], block[1] + direction[1]
-        if track[dx][dy] == '#':
-            direction_count += 1
+    return saved_costs
 
-    if direction_count == 4:
-        continue
 
-    # modify in-place instead of copying to... well, avoid copying
-    track[block[0]][block[1]] = "."
-    cur_cost = solve_maze(track)
-    track[block[0]][block[1]] = "#"
+# part 1
+print(sum(find_shortcuts(base_path, 2).values()))
+print(time.time() - start_time)
 
-    difference = base_cost - cur_cost
 
-    if difference > 0:
-        if difference not in track_nums.keys():
-            track_nums[difference] = 1
-        else:
-            track_nums[difference] = track_nums[difference] + 1
-
-count = 0
-
-for key, value in track_nums.items():
-    if key >= 100:
-        count += value
-
-print(count)
+# part 2
+start_time = time.time()
+print(sum(find_shortcuts(base_path, 20).values()))
 print(time.time() - start_time)
